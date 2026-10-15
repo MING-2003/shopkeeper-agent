@@ -92,6 +92,7 @@ class MetaKnowledgeService:
                 )
                 column_infos.append(column_info)
 
+            # 事务的写法
         async with self.meta_mysql_repository.session.begin():
             self.meta_mysql_repository.save_table_infos(table_infos)
             self.meta_mysql_repository.save_column_infos(column_infos)
@@ -155,6 +156,7 @@ class MetaKnowledgeService:
 
         # 不是所有字段都要同步真实值，是否同步由配置里的 sync 显式控制
         column2sync: dict[str, bool] = {}
+        # 建快速查询表
         for table in meta_config.tables:
             for column in table.columns:
                 column2sync[f"{table.name}.{column.name}"] = column.sync
