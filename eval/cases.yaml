@@ -1,0 +1,66 @@
+# 电商问数评测集（起步 10 条，覆盖：简单聚合 / 多条件过滤 / 多表 JOIN / 模糊表述 / 时间范围 / 无答案）
+# 表名与字段名来自 docker/mysql/dw.sql 与 conf/meta_config.yaml 的真实 schema。
+# sql_must_contain 是宽松判定：生成 SQL 包含全部片段（大小写不敏感）即算通过。
+# 后续扩展方向：为重点 case 补 expected_result（人工写正确 SQL 跑一次存结果），启用执行准确率比对。
+
+# ---------- 简单聚合 ----------
+- id: sales_total_by_region
+  question: 统计华北地区的销售总额
+  expected:
+    tables: [fact_order, dim_region]
+    sql_must_contain: ["SUM", "华北"]
+
+- id: gmv_2025_q1
+  question: 2025年第一季度的GMV是多少
+  expected:
+    tables: [fact_order]
+    sql_must_contain: ["SUM"]
+
+# ---------- 多条件过滤 / 多表 JOIN ----------
+- id: guangdong_phone_orders
+  question: 广东省的手机数码类订单有多少
+  expected:
+    tables: [fact_order, dim_region, dim_product]
+    sql_must_contain: ["广东省"]
+
+- id: gold_member_amount
+  question: 黄金会员贡献的订单总金额是多少
+  expected:
+    tables: [fact_order, dim_customer]
+    sql_must_contain: ["黄金", "SUM"]
+
+- id: huawei_north_sales
+  question: 华北地区华为产品的销售额是多少
+  expected:
+    tables: [fact_order, dim_region, dim_product]
+    sql_must_contain: ["华北", "华为"]
+
+# ---------- 模糊表述 ----------
+- id: iphone_units_sold
+  question: iPhone 15 Pro 卖了多少台
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["iPhone"]
+
+- id: best_seller_product
+  question: 卖得最好的商品是哪个
+  expected:
+    tables: [fact_order, dim_product]
+
+# ---------- 时间范围 ----------
+- id: march_daily_sales
+  question: 2025年3月每天的销售额是多少
+  expected:
+    tables: [fact_order, dim_date]
+    sql_must_contain: ["2025"]
+
+# ---------- 无答案（期望诚实拒绝，不编造数据） ----------
+- id: no_answer_spaceship
+  question: 2026年全球宇宙飞船的销量是多少
+  expected:
+    should_fail: true
+
+- id: no_answer_antarctica
+  question: 南极地区的销售额是多少
+  expected:
+    should_fail: true

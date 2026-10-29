@@ -13,6 +13,8 @@ export type ProgressEvent = {
 export type ResultEvent = {
   type: "result";
   data: unknown;
+  // 后端标记：结果为零行或全 NULL，表示数仓中没有匹配数据
+  empty?: boolean;
 };
 
 export type ErrorEvent = {

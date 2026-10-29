@@ -16,6 +16,7 @@ from app.agent.context import DataAgentContext
 from app.agent.nodes.add_extra_context import add_extra_context
 from app.agent.nodes.correct_sql import correct_sql
 from app.agent.nodes.extract_keywords import extract_keywords
+from app.agent.nodes.fail_fast import fail_fast
 from app.agent.nodes.filter_metric import filter_metric
 from app.agent.nodes.filter_table import filter_table
 from app.agent.nodes.generate_sql import generate_sql
@@ -39,6 +40,9 @@ from app.repositories.mysql.meta.meta_mysql_repository import MetaMySQLRepositor
 from app.repositories.qdrant.column_qdrant_repository import ColumnQdrantRepository
 from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantRepository
 
+# SQL 自动修正的最大次数，防止失败 case 无限循环烧 token
+MAX_SQL_RETRIES = 2
+
 # StateGraph 声明整张图使用的状态结构和运行时上下文结构
 graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgentContext)
 
@@ -54,6 +58,7 @@ graph_builder.add_node("add_extra_context", add_extra_context)
 graph_builder.add_node("generate_sql", generate_sql)
 graph_builder.add_node("validate_sql", validate_sql)
 graph_builder.add_node("correct_sql", correct_sql)
+graph_builder.add_node("fail_fast", fail_fast)
 graph_builder.add_node("run_sql", run_sql)
 
 # 从用户问题开始，先抽取关键词作为后续检索的基础
@@ -79,13 +84,28 @@ graph_builder.add_edge("filter_metric", "add_extra_context")
 graph_builder.add_edge("add_extra_context", "generate_sql")
 graph_builder.add_edge("generate_sql", "validate_sql")
 
-# SQL 校验通过就直接执行，校验失败则先进入修正节点
+# SQL 校验通过就直接执行；失败且未超限则进入修正节点重新校验，形成闭环；超限走兜底
+def route_after_validate(state: DataAgentState) -> str:
+    """校验通过就执行；失败且未超限则修正；超限走兜底"""
+    if state["error"] is None:
+        return "run_sql"
+    # state 运行时是 dict，首轮 retry_count 尚未写入，用 get 兜底
+    if state.get("retry_count", 0) < MAX_SQL_RETRIES:
+        return "correct_sql"
+    return "fail_fast"
+
+
 graph_builder.add_conditional_edges(
     source="validate_sql",
-    path=lambda state: "run_sql" if state["error"] is None else "correct_sql",
-    path_map={"run_sql": "run_sql", "correct_sql": "correct_sql"},
+    path=route_after_validate,
+    path_map={
+        "run_sql": "run_sql",
+        "correct_sql": "correct_sql",
+        "fail_fast": "fail_fast",
+    },
 )
-graph_builder.add_edge("correct_sql", "run_sql")
+graph_builder.add_edge("correct_sql", "validate_sql")
+graph_builder.add_edge("fail_fast", END)
 graph_builder.add_edge("run_sql", END)
 
 # 编译后的 graph 是对外使用的 Agent 执行入口

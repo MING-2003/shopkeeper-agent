@@ -28,7 +28,14 @@ async def run_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]):
         result = await dw_mysql_repository.run(sql)
         logger.info(f"SQL执行结果：{result}")
         writer({"type": "progress", "step": step, "status": "success"})
-        writer({"type": "result", "data": result})
+        # 空结果标记：零行或全 NULL（聚合函数在空集上返回"一行 NULL"而不是零行）
+        # 都意味着"数仓里没有匹配数据"，前端据此展示友好提示而不是一张空表
+        is_empty = not result or all(
+            all(value is None for value in row.values()) for row in result
+        )
+        writer({"type": "result", "data": result, "empty": is_empty})
+        if is_empty:
+            logger.info("本次查询未匹配到任何数据")
 
     except Exception as e:
         logger.error(f"{step} failed: {e}")

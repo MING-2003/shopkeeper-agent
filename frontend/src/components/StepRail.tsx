@@ -28,6 +28,7 @@ const nodes: FlowNode[] = [
   { step: "校验SQL", x: 410, y: 630 },
   { step: "校正SQL", x: 670, y: 630 },
   { step: "执行SQL", x: 410, y: 724 },
+  { step: "SQL生成失败", x: 410, y: 828 },
 ];
 
 const connectors = [
@@ -43,14 +44,21 @@ const connectors = [
   "M530 358 L530 386 L410 386 L410 416",
   "M410 462 L410 520",
   "M410 566 L410 624",
-  "M410 670 L410 718",
+  // 校验SQL --无误--> 执行SQL（偏左）
+  "M390 670 L390 718",
+  // 校验SQL --有误--> 校正SQL
   "M488 650 L586 650",
-  "M670 670 L670 696 L410 696 L410 718",
+  // 校正SQL --重新校验--> 校验SQL（修正闭环）
+  "M586 676 L488 676",
+  // 校验SQL --超限--> SQL生成失败（偏右，与无误线平行）
+  "M430 670 L430 822",
 ];
 
 const branchLabels = [
   { text: "有误", x: 530, y: 642 },
-  { text: "无误", x: 366, y: 704 },
+  { text: "重新校验", x: 512, y: 694 },
+  { text: "无误", x: 348, y: 704 },
+  { text: "超限", x: 440, y: 704 },
 ];
 
 function getStatusMap(steps: StepState[]) {
@@ -127,10 +135,10 @@ export function StepRail({ steps = [] }: { steps?: StepState[] }) {
       </div>
 
       <div className="overflow-x-auto">
-        <div className="relative mx-auto h-[780px] w-[820px]">
+        <div className="relative mx-auto h-[900px] w-[820px]">
           <svg
             className="pointer-events-none absolute inset-0 h-full w-full"
-            viewBox="0 0 820 780"
+            viewBox="0 0 820 900"
             fill="none"
             aria-hidden="true"
           >

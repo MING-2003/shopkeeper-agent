@@ -1,0 +1,108 @@
+{
+  "summary": {
+    "total": 10,
+    "pass_rate": 0.9,
+    "p50": 6.36,
+    "p95": 9.54,
+    "recall_rate": 1.0,
+    "sql_ok_rate": 1.0,
+    "retry_rate": 0.0,
+    "no_answer_pass_rate": 0.5
+  },
+  "records": [
+    {
+      "id": "sales_total_by_region",
+      "latency": 9.54,
+      "passed": true,
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(t2.order_amount) AS 销售总额\nFROM dim_region t1\nINNER JOIN fact_order t2 ON t1.region_id = t2.region_id\nWHERE t1.region_name = '华北'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "gmv_2025_q1",
+      "latency": 5.37,
+      "passed": true,
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(t1.order_amount) AS GMV\nFROM fact_order t1\nJOIN dim_date t2 ON t1.date_id = t2.date_id\nWHERE t2.quarter = 'Q1' AND t2.date_id >= 20250101 AND t2.date_id <= 20250331",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "guangdong_phone_orders",
+      "latency": 6.36,
+      "passed": true,
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT COUNT(*) AS 订单数量\nFROM fact_order fo\nJOIN dim_product dp ON fo.product_id = dp.product_id\nJOIN dim_region dr ON fo.region_id = dr.region_id\nWHERE dr.province = '广东省' AND dp.category = '手机数码';",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "gold_member_amount",
+      "latency": 6.55,
+      "passed": true,
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(t2.order_amount) AS 订单总金额\nFROM dim_customer t1\nINNER JOIN fact_order t2 ON t1.customer_id = t2.customer_id\nWHERE t1.member_level = '黄金'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "huawei_north_sales",
+      "latency": 6.66,
+      "passed": true,
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(t3.order_amount) AS 销售额\nFROM fact_order t3\nJOIN dim_region t1 ON t3.region_id = t1.region_id\nJOIN dim_product t2 ON t3.product_id = t2.product_id\nWHERE t1.region_name = '华北' AND t2.brand = '华为'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "iphone_units_sold",
+      "latency": 4.95,
+      "passed": true,
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(t1.order_quantity) AS 销量\nFROM fact_order t1\nJOIN dim_product t2 ON t1.product_id = t2.product_id\nWHERE t2.product_name = 'iPhone 15 Pro';",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "best_seller_product",
+      "latency": 6.25,
+      "passed": true,
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT dp.product_name AS 商品名称\nFROM dim_product dp\nJOIN fact_order fo ON dp.product_id = fo.product_id\nGROUP BY dp.product_name\nORDER BY SUM(fo.order_quantity) DESC\nLIMIT 1",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "march_daily_sales",
+      "latency": 6.04,
+      "passed": true,
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT d.day AS 日, SUM(f.order_amount) AS 销售额\nFROM fact_order f\nJOIN dim_date d ON f.date_id = d.date_id\nWHERE d.date_id >= 20250301 AND d.date_id <= 20250331\nGROUP BY d.day\nORDER BY d.day;",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "no_answer_spaceship",
+      "latency": 6.65,
+      "passed": true,
+      "sql": "SELECT SUM(t2.order_quantity) AS 销量\nFROM dim_product t1\nJOIN fact_order t2 ON t1.product_id = t2.product_id\nJOIN dim_date t3 ON t2.date_id = t3.date_id\nWHERE t1.category = '宇宙飞船' AND t3.year = 2026",
+      "error": null
+    },
+    {
+      "id": "no_answer_antarctica",
+      "latency": 4.64,
+      "passed": false,
+      "sql": "SELECT COALESCE(SUM(t2.order_amount), 0) AS 销售额\nFROM dim_region t1\nJOIN fact_order t2 ON t1.region_id = t2.region_id\nWHERE t1.region_name = '南极'",
+      "error": null
+    }
+  ]
+}

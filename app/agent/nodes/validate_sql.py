@@ -16,7 +16,7 @@ from app.repositories.mysql.dw.dw_mysql_repository import DWMySQLRepository
 async def validate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]):
     """校验 SQL，并返回 error 字段控制后续条件分支"""
 
-    writer = runtime.stream_writer
+    writer = runtime.stream_writer#stream_writer 是 LangGraph 的运行时能力,是节点向前端实时上报进度的通道
     step = "校验SQL"
     writer({"type": "progress", "step": step, "status": "running"})
 

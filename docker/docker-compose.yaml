@@ -8,7 +8,8 @@ services:
       MYSQL_USER: didilili
       MYSQL_PASSWORD: dili123
     ports:
-      - "3306:3306"
+      # 宿主机 3306 被本机 MySQL 服务占用，映射到 3307；容器内仍是 3306
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql:/docker-entrypoint-initdb.d
@@ -23,7 +24,8 @@ services:
       discovery.type: single-node
       xpack.security.enabled: "false"
     ports:
-      - "9200:9200"
+      # 宿主机 9200 被 cpolar 的 Web 管理页占用，映射到 9201；容器内仍是 9200
+      - "9201:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
   kibana:

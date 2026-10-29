@@ -46,7 +46,8 @@ async def generate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
         output_parser = StrOutputParser()
         chain = prompt | llm | output_parser
 
-        result = await chain.ainvoke(
+        result = await chain.ainvoke(#这个方法的作用是遍历步骤序列,把上一步的输出作为下一步的输入,最后返回
+        # 这个方法里面填的参数,只给链上的第一个组件使用,其余组件的输入都是上一个组件的输出
             {
                 # YAML 更适合放进提示词：保留嵌套结构 顺序和中文说明，方便模型理解表字段关系
                 "table_infos": yaml.dump(

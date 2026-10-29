@@ -106,7 +106,9 @@ export default function App() {
             return {
               ...message,
               status: "done",
-              content: summarizeResult(event.data),
+              content: event.empty
+                ? "未找到与问题匹配的数据，请调整条件后重试。"
+                : summarizeResult(event.data),
               result: event.data,
             };
           }

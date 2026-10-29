@@ -9,16 +9,18 @@ logging:
     enable: true
     level: INFO
 
+# 2026-10-26 修改：宿主机 3306 被本机 MySQL 服务、9200 被 cpolar 占用，
+# Docker 容器端口改为映射到 3307/9201（见 docker/docker-compose.yaml），此处同步修改
 db_meta:
   host: localhost
-  port: 3306
+  port: 3307
   user: didilili
   password: dili123
   database: meta
 
 db_dw:
   host: localhost
-  port: 3306
+  port: 3307
   user: didilili
   password: dili123
   database: dw
@@ -35,7 +37,7 @@ embedding:
 
 es:
   host: localhost
-  port: 9200
+  port: 9201
   index_name: data_agent
 
 # LLM 配置
