@@ -1,5 +1,7 @@
-# 电商问数评测集（起步 10 条，覆盖：简单聚合 / 多条件过滤 / 多表 JOIN / 模糊表述 / 时间范围 / 无答案）
+# 电商问数评测集（共 50 条，覆盖：简单聚合 / 多条件过滤 / 多表 JOIN / 分组排名 / 模糊表述 / 时间范围 / 指标别名 / 无答案）
 # 表名与字段名来自 docker/mysql/dw.sql 与 conf/meta_config.yaml 的真实 schema。
+# 数仓数据仅覆盖 2025 年 Q1（20250101~20250331）：时间类 case 的取值勿超出该区间；
+# 无答案 case 依赖 schema/数据中不存在的值（如游艇、2026 年、2月29日、赵子龙）。
 # sql_must_contain 是宽松判定：生成 SQL 包含全部片段（大小写不敏感）即算通过。
 # 后续扩展方向：为重点 case 补 expected_result（人工写正确 SQL 跑一次存结果），启用执行准确率比对。
 
@@ -15,6 +17,54 @@
   expected:
     tables: [fact_order]
     sql_must_contain: ["SUM"]
+
+- id: total_order_count
+  question: 数据库里一共有多少笔订单
+  expected:
+    tables: [fact_order]
+    sql_must_contain: ["COUNT"]
+
+- id: total_quantity_sold
+  question: 一共卖出了多少件商品
+  expected:
+    tables: [fact_order]
+    sql_must_contain: ["SUM"]
+
+- id: avg_order_amount
+  question: 平均每笔订单的金额是多少
+  expected:
+    tables: [fact_order]
+    sql_must_contain: ["AVG"]
+
+- id: avg_quantity_per_order
+  question: 平均每笔订单购买了多少件商品
+  expected:
+    tables: [fact_order]
+    sql_must_contain: ["AVG"]
+
+- id: platinum_member_amount
+  question: 铂金会员贡献的销售额是多少
+  expected:
+    tables: [fact_order, dim_customer]
+    sql_must_contain: ["铂金", "SUM"]
+
+- id: bronze_member_orders
+  question: 青铜会员总共下了多少单
+  expected:
+    tables: [fact_order, dim_customer]
+    sql_must_contain: ["青铜", "COUNT"]
+
+- id: female_customer_amount
+  question: 女性客户的订单总金额是多少
+  expected:
+    tables: [fact_order, dim_customer]
+    sql_must_contain: ["女", "SUM"]
+
+- id: home_appliance_sales
+  question: 家用电器品类的销售额是多少
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["家用电器", "SUM"]
 
 # ---------- 多条件过滤 / 多表 JOIN ----------
 - id: guangdong_phone_orders
@@ -35,6 +85,103 @@
     tables: [fact_order, dim_region, dim_product]
     sql_must_contain: ["华北", "华为"]
 
+- id: shanghai_appliance_sales
+  question: 上海市的家用电器销售额是多少
+  expected:
+    tables: [fact_order, dim_region, dim_product]
+    sql_must_contain: ["上海市", "家用电器"]
+
+- id: nike_sales
+  question: 耐克品牌的销售额是多少
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["耐克", "SUM"]
+
+- id: zhejiang_snack_orders
+  question: 浙江省的休闲零食订单有多少
+  expected:
+    tables: [fact_order, dim_region, dim_product]
+    sql_must_contain: ["浙江省"]
+
+- id: sichuan_gold_amount
+  question: 四川省黄金会员的订单总金额是多少
+  expected:
+    tables: [fact_order, dim_region, dim_customer]
+    sql_must_contain: ["四川省", "黄金", "SUM"]
+
+- id: samsung_january_sales
+  question: 2025年1月三星手机的销售额是多少
+  expected:
+    tables: [fact_order, dim_date, dim_product]
+    sql_must_contain: ["三星", "2025"]
+
+- id: dyson_january_sales
+  question: 2025年1月戴森吸尘器的销售额是多少
+  expected:
+    tables: [fact_order, dim_date, dim_product]
+    sql_must_contain: ["戴森", "2025"]
+
+- id: huazhong_male_amount
+  question: 华中地区男性客户的订单总金额是多少
+  expected:
+    tables: [fact_order, dim_region, dim_customer]
+    sql_must_contain: ["华中", "男"]
+
+- id: high_value_order_count
+  question: 有多少笔订单的金额超过了5000元
+  expected:
+    tables: [fact_order]
+    sql_must_contain: ["5000"]
+
+- id: snack_quantity
+  question: 休闲零食类商品卖出了多少件
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["休闲零食", "SUM"]
+
+# ---------- 分组统计与排名 ----------
+- id: top_region_sales
+  question: 哪个大区的销售额最高
+  expected:
+    tables: [fact_order, dim_region]
+    sql_must_contain: ["GROUP BY"]
+
+- id: top_province_sales
+  question: 哪个省份的销售额最高
+  expected:
+    tables: [fact_order, dim_region]
+    sql_must_contain: ["GROUP BY"]
+
+- id: top_member_level_orders
+  question: 哪个会员等级的订单数量最多
+  expected:
+    tables: [fact_order, dim_customer]
+    sql_must_contain: ["GROUP BY"]
+
+- id: monthly_sales_trend
+  question: 2025年每个月的销售额是多少
+  expected:
+    tables: [fact_order, dim_date]
+    sql_must_contain: ["GROUP BY"]
+
+- id: category_sales_ranking
+  question: 按商品品类统计销售额，从高到低排序
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["GROUP BY", "ORDER BY"]
+
+- id: top3_brands
+  question: 销售额排名前三的品牌是哪些
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["ORDER BY", "LIMIT"]
+
+- id: top_spending_customer
+  question: 消费金额最高的客户是谁
+  expected:
+    tables: [fact_order, dim_customer]
+    sql_must_contain: ["ORDER BY"]
+
 # ---------- 模糊表述 ----------
 - id: iphone_units_sold
   question: iPhone 15 Pro 卖了多少台
@@ -47,12 +194,78 @@
   expected:
     tables: [fact_order, dim_product]
 
-# ---------- 时间范围 ----------
+- id: samsung_phone_sales
+  question: 三星手机卖了多少台
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["三星"]
+
+- id: air_conditioner_sales
+  question: 空调卖得怎么样
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["空调"]
+
+- id: milk_sales
+  question: 蒙牛纯牛奶卖出了多少件
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["蒙牛"]
+
+- id: coffee_sales
+  question: 雀巢咖啡卖出了多少件
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["雀巢"]
+
+- id: worst_selling_product
+  question: 卖得最差的商品是哪个
+  expected:
+    tables: [fact_order, dim_product]
+    sql_must_contain: ["ORDER BY"]
+
+# ---------- 时间范围 / 指标别名 ----------
 - id: march_daily_sales
   question: 2025年3月每天的销售额是多少
   expected:
     tables: [fact_order, dim_date]
     sql_must_contain: ["2025"]
+
+- id: january_daily_orders
+  question: 2025年1月每天的订单量是多少
+  expected:
+    tables: [fact_order, dim_date]
+    sql_must_contain: ["2025"]
+
+- id: valentine_day_sales
+  question: 2025年2月14日当天的销售额是多少
+  expected:
+    tables: [fact_order, dim_date]
+    sql_must_contain: ["2025"]
+
+- id: february_gmv
+  question: 2025年2月的GMV是多少
+  expected:
+    tables: [fact_order, dim_date]
+    sql_must_contain: ["2025"]
+
+- id: jan_first_week_sales
+  question: 2025年1月1日到1月7日的销售额是多少
+  expected:
+    tables: [fact_order, dim_date]
+    sql_must_contain: ["2025"]
+
+- id: total_revenue_q1
+  question: 2025年一季度的收入是多少
+  expected:
+    tables: [fact_order]
+    sql_must_contain: ["SUM"]
+
+- id: feb_vs_march
+  question: 2025年2月和3月哪个月的销售额更高
+  expected:
+    tables: [fact_order, dim_date]
+    sql_must_contain: ["GROUP BY"]
 
 # ---------- 无答案（期望诚实拒绝，不编造数据） ----------
 - id: no_answer_spaceship
@@ -62,5 +275,30 @@
 
 - id: no_answer_antarctica
   question: 南极地区的销售额是多少
+  expected:
+    should_fail: true
+
+- id: no_answer_feb29
+  question: 2025年2月29日的销售额是多少
+  expected:
+    should_fail: true
+
+- id: no_answer_2026_double11
+  question: 2026年双十一的销售额是多少
+  expected:
+    should_fail: true
+
+- id: no_answer_yacht
+  question: 游艇的销量是多少
+  expected:
+    should_fail: true
+
+- id: no_answer_diamond
+  question: 钻石类商品的销售额是多少
+  expected:
+    should_fail: true
+
+- id: no_answer_customer_zhaozilong
+  question: 赵子龙这个客户总共消费了多少金额
   expected:
     should_fail: true

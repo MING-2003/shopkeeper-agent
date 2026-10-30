@@ -45,8 +45,10 @@ es:
 # 阿里云百炼的 API Key，导致调用时返回 401 "Token is invalid"。
 # 因此将 base_url 切换为百炼的 OpenAI 兼容端点(dashscope.aliyuncs.com/compatible-mode/v1)，
 # 并将模型从硅基流动的 Pro/zai-org/GLM-5.1 换成百炼上的 qwen-plus。
-# 如需更换模型(如 qwen-max、deepseek-v3)，只改 model_name 即可，前提是百炼账号已开通该模型。
+# 2026-10-30 修改：qwen-plus 是付费模型，额度已用尽；切换到百炼"免费额度"页内的
+# qwen3.7-plus（免费 1M tokens，有效期至 2026-11-28）。
+# 如需再换模型，只改 model_name 为百炼"模型 Code"即可（免费额度页可见各模型余量）。
 llm:
-  model_name: qwen-plus
+  model_name: qwen3.7-plus
   api_key: ${oc.env:LLM_API_KEY}
   base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
