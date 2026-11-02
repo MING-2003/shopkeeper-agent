@@ -30,6 +30,7 @@ async def query_handler(
 
     return StreamingResponse(
         # query.query 是用户问题字符串；QueryService.query 返回异步生成器供响应逐段消费
-        query_service.query(query.query),
+        # conversation_id 由前端每个会话生成，同一会话的追问共享多轮对话记忆
+        query_service.query(query.query, conversation_id=query.conversation_id),
         media_type="text/event-stream",
     )

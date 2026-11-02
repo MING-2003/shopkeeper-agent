@@ -46,3 +46,24 @@ CREATE TABLE column_metric
     metric_id VARCHAR(64) COMMENT '指标编号',
     PRIMARY KEY (column_id, metric_id)
 );
+
+DROP TABLE IF EXISTS conversation;
+CREATE TABLE conversation
+(
+    id         VARCHAR(64) PRIMARY KEY COMMENT '会话编号(前端生成的UUID)',
+    title      VARCHAR(128) COMMENT '会话标题(取第一轮提问)',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后活跃时间'
+);
+
+DROP TABLE IF EXISTS chat_message;
+CREATE TABLE chat_message
+(
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '消息编号',
+    conversation_id VARCHAR(64) NOT NULL COMMENT '所属会话编号',
+    question        TEXT COMMENT '用户问题(原始问法)',
+    `sql`           TEXT COMMENT '本轮执行的SQL',
+    result          JSON COMMENT '查询结果(截断后)',
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    INDEX idx_chat_message_conversation (conversation_id, id)
+);

@@ -13,6 +13,17 @@ export function formatTime(timestamp: number) {
   }).format(timestamp);
 }
 
+export function formatDateTime(value: string | number) {
+  const date = typeof value === "string" ? new Date(value) : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("zh-CN", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 export function summarizeResult(data: unknown) {
   if (Array.isArray(data)) {
     return data.length > 0 ? `查询完成，共 ${data.length} 行结果。` : "查询完成，结果为空。";

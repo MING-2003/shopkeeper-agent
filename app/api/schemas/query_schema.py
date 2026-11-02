@@ -13,3 +13,6 @@ class QuerySchema(BaseModel):
 
     # 前端请求体中的 query 字段，例如 {"query": "统计华北地区销售额"}
     query: str
+    # 会话 ID：前端每个会话生成一个 UUID，同一会话的追问共享对话记忆（thread_id）；
+    # 不传则视为独立的单轮请求（兼容旧调用方）
+    conversation_id: str | None = None

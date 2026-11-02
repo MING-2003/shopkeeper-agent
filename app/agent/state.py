@@ -64,6 +64,9 @@ class DataAgentState(TypedDict):
     """一次问数链路中的核心状态"""
 
     query: str  # 用户输入的查询
+    # 会话历史：多轮对话记忆，元素为 {"question": 原始问法, "sql": 本轮执行的 SQL}
+    # 由 checkpointer 跨请求持久化；rewrite_query 读取并追加、run_sql 回填 SQL
+    history: list[dict]
     keywords: list[str]  # 抽取的关键词
     retrieved_column_infos: list[ColumnInfo]  # 检索到的字段信息
     retrieved_metric_infos: list[MetricInfo]  # 检索到的指标信息

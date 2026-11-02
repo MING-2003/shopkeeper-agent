@@ -33,9 +33,18 @@ async def run_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]):
         is_empty = not result or all(
             all(value is None for value in row.values()) for row in result
         )
-        writer({"type": "result", "data": result, "empty": is_empty})
+        # sql 字段供服务层落库历史会话使用，前端会忽略多余字段
+        writer({"type": "result", "data": result, "empty": is_empty, "sql": sql})
         if is_empty:
             logger.info("本次查询未匹配到任何数据")
+
+        # 把本轮执行的 SQL 回填进会话历史（history[-1] 是本轮的原始问题），
+        # 下一轮改写追问时能看到上一轮实际执行的 SQL，更容易沿用表和口径。
+        # 未挂 checkpointer 的调用（本地调试/评测）没有 history，跳过。
+        history = state.get("history") or []
+        if history:
+            return {"history": history[:-1] + [{**history[-1], "sql": sql}]}
+        return None
 
     except Exception as e:
         logger.error(f"{step} failed: {e}")

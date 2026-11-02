@@ -40,3 +40,18 @@ export type ChatMessage = {
   result?: unknown;
   error?: string;
 };
+
+export type ConversationSummary = {
+  id: string;
+  title: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+export type ConversationMessage = {
+  id: number;
+  question: string | null;
+  sql: string | null;
+  result: unknown;
+  created_at: string | null;
+};

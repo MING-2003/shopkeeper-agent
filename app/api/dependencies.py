@@ -8,7 +8,7 @@ FastAPI 依赖组装
 
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,6 +24,8 @@ from app.repositories.mysql.dw.dw_mysql_repository import DWMySQLRepository
 from app.repositories.mysql.meta.meta_mysql_repository import MetaMySQLRepository
 from app.repositories.qdrant.column_qdrant_repository import ColumnQdrantRepository
 from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantRepository
+from app.repositories.mysql.meta.conversation_repository import ConversationRepository
+from app.services.conversation_service import ConversationService
 from app.services.query_service import QueryService
 
 
@@ -82,7 +84,26 @@ async def get_value_es_repository() -> ValueESRepository:
     return ValueESRepository(es_client_manager.client)
 
 
+async def get_conversation_repository(
+    session: Annotated[AsyncSession, Depends(get_meta_session)],
+) -> ConversationRepository:
+    """创建会话仓储；与元数据仓储共享同一请求内的 meta Session"""
+
+    return ConversationRepository(session)
+
+
+async def get_conversation_service(
+    conversation_repository: Annotated[
+        ConversationRepository, Depends(get_conversation_repository)
+    ],
+) -> ConversationService:
+    """组装历史会话服务（列表查询、消息回放、落库）"""
+
+    return ConversationService(conversation_repository)
+
+
 async def get_query_service(
+    request: Request,
     meta_mysql_repository: Annotated[
         MetaMySQLRepository, Depends(get_meta_mysql_repository)
     ],
@@ -97,15 +118,19 @@ async def get_query_service(
         MetricQdrantRepository, Depends(get_metric_qdrant_repository)
     ],
     value_es_repository: Annotated[ValueESRepository, Depends(get_value_es_repository)],
+    conversation_service: Annotated[ConversationService, Depends(get_conversation_service)],
 ) -> QueryService:
     """组装一次查询所需的业务服务"""
 
-    # QueryService 只接收已经创建好的依赖对象，本身不关心这些对象来自 MySQL、Qdrant 还是 ES
+    # 带 checkpointer 的图在 lifespan 里构建并挂在 app.state（多轮对话记忆用）；
+    # QueryService 只接收创建好的依赖对象，本身不关心它们来自哪个基础设施
     return QueryService(
+        graph=request.app.state.graph,
         meta_mysql_repository=meta_mysql_repository,
         embedding_client=embedding_client,
         dw_mysql_repository=dw_mysql_repository,
         column_qdrant_repository=column_qdrant_repository,
         metric_qdrant_repository=metric_qdrant_repository,
         value_es_repository=value_es_repository,
+        conversation_service=conversation_service,
     )

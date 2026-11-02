@@ -9,15 +9,26 @@ import {
   History,
   Leaf,
   MessageSquarePlus,
+  MessagesSquare,
   Server,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Composer } from "./components/Composer";
 import { EmptyState } from "./components/EmptyState";
 import { MessageBubble } from "./components/MessageBubble";
-import { streamQuery } from "./lib/agentApi";
-import { cn, summarizeResult } from "./lib/format";
-import type { AgentEvent, ChatMessage, StepState } from "./types/agent";
+import {
+  fetchConversationMessages,
+  fetchConversations,
+  streamQuery,
+} from "./lib/agentApi";
+import { cn, formatDateTime, summarizeResult } from "./lib/format";
+import type {
+  AgentEvent,
+  ChatMessage,
+  ConversationMessage,
+  ConversationSummary,
+  StepState,
+} from "./types/agent";
 
 const examples = [
   "统计 2025 年第一季度各大区的 GMV，并按 GMV 从高到低排序",
@@ -42,14 +53,68 @@ function upsertStep(steps: StepState[] = [], event: Extract<AgentEvent, { type: 
   return next;
 }
 
+// 历史会话的问答记录转成聊天消息：一行记录 = 一问一答两条消息
+function toChatMessages(rows: ConversationMessage[]): ChatMessage[] {
+  const chat: ChatMessage[] = [];
+  for (const row of rows) {
+    const createdAt = row.created_at ? Date.parse(row.created_at) : Date.now();
+    chat.push({
+      id: `history-${row.id}-q`,
+      role: "user",
+      content: row.question ?? "",
+      createdAt,
+    });
+    chat.push({
+      id: `history-${row.id}-a`,
+      role: "assistant",
+      content: summarizeResult(row.result),
+      createdAt,
+      status: "done",
+      result: row.result ?? undefined,
+    });
+  }
+  return chat;
+}
+
 export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [activeController, setActiveController] = useState<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  // 会话 ID：同一会话内保持不变，"新会话"时重置——后端用它恢复/隔离多轮对话记忆
+  const conversationIdRef = useRef<string>(makeId());
+  // 侧边栏的会话列表；activeId 只用于高亮当前选中的会话窗口
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [activeId, setActiveId] = useState<string>(conversationIdRef.current);
 
   const isStreaming = Boolean(activeController);
   const canSubmit = draft.trim().length > 0 && !isStreaming;
+
+  const refreshConversations = async () => {
+    try {
+      setConversations(await fetchConversations());
+    } catch {
+      // 会话列表拉取失败不阻塞主界面，侧边栏保持现状
+    }
+  };
+
+  useEffect(() => {
+    refreshConversations();
+  }, []);
+
+  // 打开历史会话：切换会话 ID 并回放该会话的全部问答记录
+  const openConversation = async (conversationId: string) => {
+    if (isStreaming || conversationId === conversationIdRef.current) return;
+    try {
+      const rows = await fetchConversationMessages(conversationId);
+      conversationIdRef.current = conversationId;
+      setActiveId(conversationId);
+      setDraft("");
+      setMessages(toChatMessages(rows));
+    } catch {
+      // 拉取失败保持当前会话不变
+    }
+  };
 
   const completedCount = useMemo(
     () => messages.filter((message) => message.role === "assistant" && message.status === "done").length,
@@ -124,7 +189,11 @@ export default function App() {
     };
 
     try {
-      await streamQuery(query, { signal: controller.signal, onEvent });
+      await streamQuery(query, {
+        signal: controller.signal,
+        conversationId: conversationIdRef.current,
+        onEvent,
+      });
       setMessages((current) =>
         current.map((message) =>
           message.id === assistantId && message.status === "streaming"
@@ -148,6 +217,8 @@ export default function App() {
       );
     } finally {
       setActiveController(null);
+      // 本轮问答可能已在后端落库，刷新侧边栏会话列表
+      refreshConversations();
     }
   };
 
@@ -157,6 +228,10 @@ export default function App() {
 
   const clearConversation = () => {
     if (isStreaming) return;
+    // 换一个会话 ID：旧会话的记忆保留在 checkpointer 里，新会话从零开始
+    const newId = makeId();
+    conversationIdRef.current = newId;
+    setActiveId(newId);
     setMessages([]);
     setDraft("");
   };
@@ -190,6 +265,42 @@ export default function App() {
               <MessageSquarePlus className="h-4 w-4" aria-hidden="true" />
               新会话
             </button>
+
+            <section>
+              <div className="mb-2 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-ink/45">
+                <MessagesSquare className="h-3.5 w-3.5" aria-hidden="true" />
+                历史会话
+              </div>
+              <div className="space-y-2">
+                {conversations.length === 0 ? (
+                  <p className="px-1 text-xs leading-5 text-ink/40">
+                    还没有历史会话，提问后自动保存。
+                  </p>
+                ) : (
+                  conversations.map((conversation) => (
+                    <button
+                      key={conversation.id}
+                      type="button"
+                      disabled={isStreaming}
+                      onClick={() => openConversation(conversation.id)}
+                      className={cn(
+                        "w-full border px-3 py-2.5 text-left transition disabled:cursor-not-allowed disabled:opacity-55",
+                        conversation.id === activeId
+                          ? "border-moss/50 bg-white/75"
+                          : "border-ink/10 bg-white/42 hover:border-moss/35 hover:bg-white/75",
+                      )}
+                    >
+                      <div className="truncate text-sm leading-5 text-ink/80">
+                        {conversation.title ?? "未命名会话"}
+                      </div>
+                      <div className="mt-1 text-xs text-ink/45">
+                        {conversation.updated_at ? formatDateTime(conversation.updated_at) : ""}
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </section>
 
             <section>
               <div className="mb-2 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-ink/45">
