@@ -6,6 +6,8 @@
 实现路径和字段召回类似：关键词扩展 -> Embedding -> Qdrant 相似度检索 -> MetricInfo 去重
 """
 
+import asyncio
+
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langgraph.runtime import Runtime
@@ -48,14 +50,17 @@ async def recall_metric(state: DataAgentState, runtime: Runtime[DataAgentContext
         # 通用关键词和指标扩展词都参与召回，提升同义指标的命中率
         keywords = set(keywords + result)
 
+        # 批量向量化：一次请求拿到全部关键词向量，替代逐词的 N 次 embedding 往返
+        embeddings = await embedding_client.aembed_documents(list(keywords))
+
+        # 关键词量级在十几个，Qdrant 检索直接并发发起，无需限流
+        search_results: list[list[MetricInfo]] = await asyncio.gather(
+            *(metric_qdrant_repository.search(embedding) for embedding in embeddings)
+        )
+
         # 用指标 id 做唯一键，避免多个关键词命中同一个指标时重复写入 state
         metric_info_map: dict[str, MetricInfo] = {}
-        for keyword in keywords:
-            # 指标库是向量集合，查询词必须先 Embedding 成 query vector
-            embedding = await embedding_client.aembed_query(keyword)
-            current_metric_infos: list[
-                MetricInfo
-            ] = await metric_qdrant_repository.search(embedding)
+        for current_metric_infos in search_results:
             for metric_info in current_metric_infos:
                 if metric_info.id not in metric_info_map:
                     metric_info_map[metric_info.id] = metric_info

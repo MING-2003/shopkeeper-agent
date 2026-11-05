@@ -6,6 +6,8 @@
 实现路径和字段/指标召回不同：关键词扩展 -> Elasticsearch 全文检索 -> ValueInfo 去重
 """
 
+import asyncio
+
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langgraph.runtime import Runtime
@@ -48,12 +50,14 @@ async def recall_value(state: DataAgentState, runtime: Runtime[DataAgentContext]
         # 通用关键词和字段值扩展词一起检索 ES，尽量提高真实取值召回率
         keywords = set(keywords + result)
 
+        # 关键词量级在十几个，ES 检索直接并发发起，无需限流
+        search_results: list[list[ValueInfo]] = await asyncio.gather(
+            *(value_es_repository.search(keyword) for keyword in keywords)
+        )
+
         # 用 ValueInfo.id 去重，避免多个关键词命中同一条字段值记录
         value_infos_map: dict[str, ValueInfo] = {}
-        for keyword in keywords:
-            current_value_infos: list[ValueInfo] = await value_es_repository.search(
-                keyword
-            )
+        for current_value_infos in search_results:
             for current_value_info in current_value_infos:
                 if current_value_info.id not in value_infos_map:
                     value_infos_map[current_value_info.id] = current_value_info

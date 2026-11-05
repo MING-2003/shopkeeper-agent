@@ -1,0 +1,601 @@
+{
+  "run_at": "2026-11-04 22:46:14",
+  "summary": {
+    "total": 50,
+    "pass_rate": 0.9,
+    "p50": 6.39,
+    "p95": 9.38,
+    "recall_rate": 0.8837209302325582,
+    "sql_ok_rate": 1.0,
+    "retry_rate": 0.0,
+    "no_answer_pass_rate": 1.0
+  },
+  "failed": [
+    {
+      "id": "samsung_january_sales",
+      "latency": 7.05,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['dim_product', 'fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE f.date_id >= 20250101 AND f.date_id <= 20250131 AND p.brand = '三星'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "dyson_january_sales",
+      "latency": 7.88,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['dim_product', 'fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE f.date_id >= 20250101 AND f.date_id <= 20250131 AND p.brand = '戴森'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "march_daily_sales",
+      "latency": 5.44,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT date_id, SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id >= 20250301 AND date_id <= 20250331 GROUP BY date_id ORDER BY date_id",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "valentine_day_sales",
+      "latency": 5.09,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id = 20250214",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "jan_first_week_sales",
+      "latency": 6.65,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id BETWEEN 20250101 AND 20250107",
+      "error": null,
+      "retried": false
+    }
+  ],
+  "records": [
+    {
+      "id": "sales_total_by_region",
+      "latency": 9.38,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS 销售总额 FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.region_name = '华北'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "gmv_2025_q1",
+      "latency": 8.22,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS GMV FROM fact_order f JOIN dim_date d ON f.date_id = d.date_id WHERE d.quarter = 'Q1' AND d.date_id >= 20250101 AND d.date_id <= 20250331",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "total_order_count",
+      "latency": 5.79,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT COUNT(*) AS 订单总数 FROM fact_order",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "total_quantity_sold",
+      "latency": 5.11,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(order_quantity) AS 销量 FROM fact_order",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "avg_order_amount",
+      "latency": 5.8,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT AVG(order_amount) AS `平均订单金额` FROM fact_order",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "avg_quantity_per_order",
+      "latency": 5.5,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT AVG(order_quantity) AS 平均每笔订单购买件数 FROM fact_order",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "platinum_member_amount",
+      "latency": 6.33,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS 销售额 FROM fact_order INNER JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id WHERE dim_customer.member_level = '铂金'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "bronze_member_orders",
+      "latency": 6.62,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT COUNT(f.order_id) AS 订单数量 FROM fact_order f JOIN dim_customer c ON f.customer_id = c.customer_id WHERE c.member_level = '青铜'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "female_customer_amount",
+      "latency": 6.43,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 订单总金额 FROM fact_order f JOIN dim_customer c ON f.customer_id = c.customer_id WHERE c.gender = '女'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "home_appliance_sales",
+      "latency": 6.35,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.category = '家用电器'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "guangdong_phone_orders",
+      "latency": 7.32,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT COUNT(*) AS 订单数量\nFROM fact_order fo\nJOIN dim_region dr ON fo.region_id = dr.region_id\nJOIN dim_product dp ON fo.product_id = dp.product_id\nWHERE dr.province = '广东省'\nAND dp.category = '手机数码';",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "gold_member_amount",
+      "latency": 6.32,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 订单总金额 FROM fact_order f JOIN dim_customer c ON f.customer_id = c.customer_id WHERE c.member_level = '黄金'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "huawei_north_sales",
+      "latency": 7.14,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_region r ON f.region_id = r.region_id JOIN dim_product p ON f.product_id = p.product_id WHERE r.region_name = '华北' AND p.brand = '华为'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "shanghai_appliance_sales",
+      "latency": 7.0,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_region r ON f.region_id = r.region_id JOIN dim_product p ON f.product_id = p.product_id WHERE r.province = '上海市' AND p.category = '家用电器'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "nike_sales",
+      "latency": 6.61,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.brand = '耐克'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "zhejiang_snack_orders",
+      "latency": 7.4,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT COUNT(*) AS 订单数量\nFROM fact_order fo\nJOIN dim_region dr ON fo.region_id = dr.region_id\nJOIN dim_product dp ON fo.product_id = dp.product_id\nWHERE dr.province = '浙江省'\nAND dp.category = '休闲零食';",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "sichuan_gold_amount",
+      "latency": 8.27,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS 订单总金额 FROM fact_order INNER JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id INNER JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.province = '四川省' AND dim_customer.member_level = '黄金'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "samsung_january_sales",
+      "latency": 7.05,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['dim_product', 'fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE f.date_id >= 20250101 AND f.date_id <= 20250131 AND p.brand = '三星'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "dyson_january_sales",
+      "latency": 7.88,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['dim_product', 'fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE f.date_id >= 20250101 AND f.date_id <= 20250131 AND p.brand = '戴森'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "huazhong_male_amount",
+      "latency": 8.06,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS 订单总金额 FROM fact_order JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.region_name = '华中' AND dim_customer.gender = '男'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "high_value_order_count",
+      "latency": 5.56,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT COUNT(order_id) AS 订单数量 FROM fact_order WHERE order_amount > 5000",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "snack_quantity",
+      "latency": 7.1,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product d ON f.product_id = d.product_id WHERE d.category = '休闲零食'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "top_region_sales",
+      "latency": 6.25,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT dr.region_name AS 大区, SUM(fo.order_amount) AS 销售额 FROM fact_order fo JOIN dim_region dr ON fo.region_id = dr.region_id GROUP BY dr.region_name ORDER BY 销售额 DESC LIMIT 1",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "top_province_sales",
+      "latency": 6.71,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT t1.province AS 省份, SUM(t2.order_amount) AS 销售额 FROM dim_region t1 JOIN fact_order t2 ON t1.region_id = t2.region_id GROUP BY t1.province ORDER BY 销售额 DESC LIMIT 1",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "top_member_level_orders",
+      "latency": 6.48,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT dc.member_level AS 会员等级, COUNT(fo.order_id) AS 订单数量 FROM fact_order fo JOIN dim_customer dc ON fo.customer_id = dc.customer_id GROUP BY dc.member_level ORDER BY 订单数量 DESC LIMIT 1",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "monthly_sales_trend",
+      "latency": 7.52,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT\n    SUBSTRING(CAST(d.date_id AS CHAR), 1, 6) AS month,\n    SUM(f.order_amount) AS sales_amount\nFROM\n    fact_order f\nJOIN\n    dim_date d ON f.date_id = d.date_id\nWHERE\n    SUBSTRING(CAST(d.date_id AS CHAR), 1, 4) = '2025'\nGROUP BY\n    SUBSTRING(CAST(d.date_id AS CHAR), 1, 6)\nORDER BY\n    month ASC;",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "category_sales_ranking",
+      "latency": 6.23,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT dp.category AS 商品品类, SUM(fo.order_amount) AS 销售额 FROM fact_order fo JOIN dim_product dp ON fo.product_id = dp.product_id GROUP BY dp.category ORDER BY 销售额 DESC",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "top3_brands",
+      "latency": 6.12,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT dp.brand, SUM(fo.order_amount) AS 销售额 FROM fact_order fo JOIN dim_product dp ON fo.product_id = dp.product_id GROUP BY dp.brand ORDER BY 销售额 DESC LIMIT 3",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "top_spending_customer",
+      "latency": 6.11,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT dc.customer_name, SUM(fo.order_amount) AS total_order_amount FROM fact_order fo JOIN dim_customer dc ON fo.customer_id = dc.customer_id GROUP BY dc.customer_name ORDER BY total_order_amount DESC LIMIT 1",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "iphone_units_sold",
+      "latency": 6.54,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.product_name = 'iPhone 15 Pro'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "best_seller_product",
+      "latency": 6.61,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT t.product_name FROM dim_product t JOIN fact_order f ON t.product_id = f.product_id GROUP BY t.product_name ORDER BY SUM(f.order_quantity) DESC LIMIT 1",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "samsung_phone_sales",
+      "latency": 5.96,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product d ON f.product_id = d.product_id WHERE d.brand = '三星'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "air_conditioner_sales",
+      "latency": 6.47,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 成交总额, SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.category = '家用电器' AND p.product_name LIKE '%空调%'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "milk_sales",
+      "latency": 6.23,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.product_name = '蒙牛纯牛奶 250ml*12'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "coffee_sales",
+      "latency": 5.73,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.brand = '雀巢'",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "worst_selling_product",
+      "latency": 5.7,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT t1.product_name FROM dim_product t1 JOIN fact_order t2 ON t1.product_id = t2.product_id GROUP BY t1.product_id, t1.product_name ORDER BY SUM(t2.order_quantity) ASC LIMIT 1",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "march_daily_sales",
+      "latency": 5.44,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT date_id, SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id >= 20250301 AND date_id <= 20250331 GROUP BY date_id ORDER BY date_id",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "january_daily_orders",
+      "latency": 6.17,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT d.date_id AS 日期, COUNT(f.order_id) AS 订单量 FROM fact_order f JOIN dim_date d ON f.date_id = d.date_id WHERE d.date_id >= 20250101 AND d.date_id <= 20250131 GROUP BY d.date_id ORDER BY d.date_id ASC",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "valentine_day_sales",
+      "latency": 5.09,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id = 20250214",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "february_gmv",
+      "latency": 5.93,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_date ON fact_order.date_id = dim_date.date_id WHERE dim_date.date_id >= 20250201 AND dim_date.date_id <= 20250228",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "jan_first_week_sales",
+      "latency": 6.65,
+      "passed": false,
+      "note": "检索层：期望的表 ['dim_date'] 未进入最终上下文（实际命中 ['fact_order']）",
+      "recall_hit": false,
+      "sql_ok": true,
+      "sql": "SELECT SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id BETWEEN 20250101 AND 20250107",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "total_revenue_q1",
+      "latency": 6.24,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT SUM(f.order_amount) AS 收入 FROM fact_order f JOIN dim_date d ON f.date_id = d.date_id WHERE d.month IN (1, 2, 3) AND f.date_id >= 20250101 AND f.date_id <= 20250331",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "feb_vs_march",
+      "latency": 18.23,
+      "passed": true,
+      "note": "表召回与 SQL 片段全部命中",
+      "recall_hit": true,
+      "sql_ok": true,
+      "sql": "SELECT\n    CASE\n        WHEN d.month = 2 THEN '2025年2月'\n        WHEN d.month = 3 THEN '2025年3月'\n    END AS month_label,\n    SUM(f.order_amount) AS total_sales\nFROM fact_order f\nJOIN dim_date d ON f.date_id = d.date_id\nWHERE d.year = 2025 AND d.month IN (2, 3)\nGROUP BY d.month\nORDER BY total_sales DESC\nLIMIT 1",
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "no_answer_spaceship",
+      "latency": 7.55,
+      "passed": true,
+      "note": "查询结果全为 NULL（聚合空集），系统没有编造数据",
+      "sql": "SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id JOIN dim_date d ON f.date_id = d.date_id WHERE d.date_id >= 20260101 AND d.date_id <= 20261231 AND p.category = '全球宇宙飞船'",
+      "error": null
+    },
+    {
+      "id": "no_answer_antarctica",
+      "latency": 6.39,
+      "passed": true,
+      "note": "查询结果全为 NULL（聚合空集），系统没有编造数据",
+      "sql": "SELECT SUM(fact_order.order_amount) AS 销售额 FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.region_name = '南极'",
+      "error": null
+    },
+    {
+      "id": "no_answer_feb29",
+      "latency": 5.39,
+      "passed": true,
+      "note": "查询结果全为 NULL（聚合空集），系统没有编造数据",
+      "sql": "SELECT SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id = 20250229",
+      "error": null
+    },
+    {
+      "id": "no_answer_2026_double11",
+      "latency": 11.6,
+      "passed": true,
+      "note": "查询结果全为 NULL（聚合空集），系统没有编造数据",
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_date d ON f.date_id = d.date_id WHERE d.date_id = 20261111",
+      "error": null
+    },
+    {
+      "id": "no_answer_yacht",
+      "latency": 5.37,
+      "passed": true,
+      "note": "查询结果全为 NULL（聚合空集），系统没有编造数据",
+      "sql": "SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.product_name LIKE '%游艇%'",
+      "error": null
+    },
+    {
+      "id": "no_answer_diamond",
+      "latency": 6.12,
+      "passed": true,
+      "note": "查询结果全为 NULL（聚合空集），系统没有编造数据",
+      "sql": "SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.category = '钻石类商品'",
+      "error": null
+    },
+    {
+      "id": "no_answer_customer_zhaozilong",
+      "latency": 6.28,
+      "passed": true,
+      "note": "查询结果全为 NULL（聚合空集），系统没有编造数据",
+      "sql": "SELECT SUM(fact_order.order_amount) AS 总消费金额 FROM fact_order JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id WHERE dim_customer.customer_name = '赵子龙'",
+      "error": null
+    }
+  ]
+}

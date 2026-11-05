@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="utf-8">
-<title>评测报告 2026-10-30 16:37:52</title>
+<title>评测报告 2026-11-04 22:46:14</title>
 <style>
   body { font-family: "Microsoft YaHei", sans-serif; max-width: 1200px; margin: 24px auto; padding: 0 16px; color: #222; }
   h1 { font-size: 20px; } h2 { font-size: 16px; margin-top: 24px; }
@@ -20,183 +20,47 @@
 </style>
 </head>
 <body>
-<h1>评测报告 <small style="color:#888;font-weight:400">2026-10-30 16:37:52</small></h1>
-<div class="banner fail">失败 3 条：february_gmv、feb_vs_march、no_answer_antarctica —— 对应下表红色行</div>
+<h1>评测报告 <small style="color:#888;font-weight:400">2026-11-04 22:46:14</small></h1>
+<div class="banner fail">失败 5 条：samsung_january_sales、dyson_january_sales、march_daily_sales、valentine_day_sales、jan_first_week_sales —— 对应下表红色行</div>
 <h2>汇总指标</h2>
-<table><tr><th>total</th><td>50</td></tr><tr><th>pass_rate</th><td>0.94</td></tr><tr><th>p50</th><td>5.17</td></tr><tr><th>p95</th><td>6.36</td></tr><tr><th>recall_rate</th><td>0.9767441860465116</td></tr><tr><th>sql_ok_rate</th><td>0.9767441860465116</td></tr><tr><th>retry_rate</th><td>0.0</td></tr><tr><th>no_answer_pass_rate</th><td>0.8571428571428571</td></tr></table>
+<table><tr><th>total</th><td>50</td></tr><tr><th>pass_rate</th><td>0.9</td></tr><tr><th>p50</th><td>6.39</td></tr><tr><th>p95</th><td>9.38</td></tr><tr><th>recall_rate</th><td>0.8837209302325582</td></tr><tr><th>sql_ok_rate</th><td>1.0</td></tr><tr><th>retry_rate</th><td>0.0</td></tr><tr><th>no_answer_pass_rate</th><td>1.0</td></tr></table>
 <h2>逐条记录（红色行 = 失败）</h2>
 <table>
 <tr><th>#</th><th>状态</th><th>case</th><th>耗时</th><th>判定说明</th><th>错误</th><th>SQL</th></tr>
-<tr class="pass"><td>1</td><td><span class="status-pass">PASS</span></td><td>sales_total_by_region</td><td>5.9s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_amount) AS 销售总额
-FROM dim_region t1
-INNER JOIN fact_order t2 ON t1.region_id = t2.region_id
-WHERE t1.region_name = &#x27;华北&#x27;</pre></details></td></tr><tr class="pass"><td>2</td><td><span class="status-pass">PASS</span></td><td>gmv_2025_q1</td><td>5.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS GMV
-FROM fact_order
-JOIN dim_date ON fact_order.date_id = dim_date.date_id
-WHERE dim_date.year = 2025 AND dim_date.quarter = &#x27;Q1&#x27;</pre></details></td></tr><tr class="pass"><td>3</td><td><span class="status-pass">PASS</span></td><td>total_order_count</td><td>3.7s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(*) AS 订单数量 FROM fact_order</pre></details></td></tr><tr class="pass"><td>4</td><td><span class="status-pass">PASS</span></td><td>total_quantity_sold</td><td>3.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(order_quantity) AS 销量 FROM fact_order</pre></details></td></tr><tr class="pass"><td>5</td><td><span class="status-pass">PASS</span></td><td>avg_order_amount</td><td>4.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT AVG(order_amount) AS 平均每笔订单的金额 FROM fact_order</pre></details></td></tr><tr class="pass"><td>6</td><td><span class="status-pass">PASS</span></td><td>avg_quantity_per_order</td><td>4.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT AVG(order_quantity) AS 平均每笔订单购买件数 FROM fact_order</pre></details></td></tr><tr class="pass"><td>7</td><td><span class="status-pass">PASS</span></td><td>platinum_member_amount</td><td>5.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_amount) AS 销售额
-FROM dim_customer t1
-INNER JOIN fact_order t2 ON t1.customer_id = t2.customer_id
-WHERE t1.member_level = &#x27;铂金&#x27;</pre></details></td></tr><tr class="pass"><td>8</td><td><span class="status-pass">PASS</span></td><td>bronze_member_orders</td><td>4.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(*) AS 下单数
-FROM fact_order fo
-JOIN dim_customer dc ON fo.customer_id = dc.customer_id
-WHERE dc.member_level = &#x27;青铜&#x27;</pre></details></td></tr><tr class="pass"><td>9</td><td><span class="status-pass">PASS</span></td><td>female_customer_amount</td><td>5.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_amount) AS 订单总金额
-FROM dim_customer t1
-INNER JOIN fact_order t2 ON t1.customer_id = t2.customer_id
-WHERE t1.gender = &#x27;女&#x27;</pre></details></td></tr><tr class="pass"><td>10</td><td><span class="status-pass">PASS</span></td><td>home_appliance_sales</td><td>4.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_amount) AS 销售额
-FROM dim_product t1
-JOIN fact_order t2 ON t1.product_id = t2.product_id
-WHERE t1.category = &#x27;家用电器&#x27;</pre></details></td></tr><tr class="pass"><td>11</td><td><span class="status-pass">PASS</span></td><td>guangdong_phone_orders</td><td>6.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(*) AS 订单数量
+<tr class="pass"><td>1</td><td><span class="status-pass">PASS</span></td><td>sales_total_by_region</td><td>9.4s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 销售总额 FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.region_name = &#x27;华北&#x27;</pre></details></td></tr><tr class="pass"><td>2</td><td><span class="status-pass">PASS</span></td><td>gmv_2025_q1</td><td>8.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS GMV FROM fact_order f JOIN dim_date d ON f.date_id = d.date_id WHERE d.quarter = &#x27;Q1&#x27; AND d.date_id &gt;= 20250101 AND d.date_id &lt;= 20250331</pre></details></td></tr><tr class="pass"><td>3</td><td><span class="status-pass">PASS</span></td><td>total_order_count</td><td>5.8s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(*) AS 订单总数 FROM fact_order</pre></details></td></tr><tr class="pass"><td>4</td><td><span class="status-pass">PASS</span></td><td>total_quantity_sold</td><td>5.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(order_quantity) AS 销量 FROM fact_order</pre></details></td></tr><tr class="pass"><td>5</td><td><span class="status-pass">PASS</span></td><td>avg_order_amount</td><td>5.8s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT AVG(order_amount) AS `平均订单金额` FROM fact_order</pre></details></td></tr><tr class="pass"><td>6</td><td><span class="status-pass">PASS</span></td><td>avg_quantity_per_order</td><td>5.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT AVG(order_quantity) AS 平均每笔订单购买件数 FROM fact_order</pre></details></td></tr><tr class="pass"><td>7</td><td><span class="status-pass">PASS</span></td><td>platinum_member_amount</td><td>6.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 销售额 FROM fact_order INNER JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id WHERE dim_customer.member_level = &#x27;铂金&#x27;</pre></details></td></tr><tr class="pass"><td>8</td><td><span class="status-pass">PASS</span></td><td>bronze_member_orders</td><td>6.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(f.order_id) AS 订单数量 FROM fact_order f JOIN dim_customer c ON f.customer_id = c.customer_id WHERE c.member_level = &#x27;青铜&#x27;</pre></details></td></tr><tr class="pass"><td>9</td><td><span class="status-pass">PASS</span></td><td>female_customer_amount</td><td>6.4s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 订单总金额 FROM fact_order f JOIN dim_customer c ON f.customer_id = c.customer_id WHERE c.gender = &#x27;女&#x27;</pre></details></td></tr><tr class="pass"><td>10</td><td><span class="status-pass">PASS</span></td><td>home_appliance_sales</td><td>6.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.category = &#x27;家用电器&#x27;</pre></details></td></tr><tr class="pass"><td>11</td><td><span class="status-pass">PASS</span></td><td>guangdong_phone_orders</td><td>7.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(*) AS 订单数量
 FROM fact_order fo
 JOIN dim_region dr ON fo.region_id = dr.region_id
 JOIN dim_product dp ON fo.product_id = dp.product_id
-WHERE dr.province = &#x27;广东省&#x27; AND dp.category = &#x27;手机数码&#x27;;</pre></details></td></tr><tr class="pass"><td>12</td><td><span class="status-pass">PASS</span></td><td>gold_member_amount</td><td>5.8s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_amount) AS 订单总金额
-FROM fact_order t1
-JOIN dim_customer t2 ON t1.customer_id = t2.customer_id
-WHERE t2.member_level = &#x27;黄金&#x27;</pre></details></td></tr><tr class="pass"><td>13</td><td><span class="status-pass">PASS</span></td><td>huawei_north_sales</td><td>6.0s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_amount) AS 销售额
-FROM dim_product t1
-JOIN fact_order t2 ON t1.product_id = t2.product_id
-JOIN dim_region t3 ON t2.region_id = t3.region_id
-WHERE t1.brand = &#x27;华为&#x27; AND t3.region_name = &#x27;华北&#x27;</pre></details></td></tr><tr class="pass"><td>14</td><td><span class="status-pass">PASS</span></td><td>shanghai_appliance_sales</td><td>5.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_amount) AS 销售额
-FROM dim_region t1
-JOIN fact_order t2 ON t1.region_id = t2.region_id
-JOIN dim_product t3 ON t2.product_id = t3.product_id
-WHERE t1.province = &#x27;上海市&#x27; AND t3.category = &#x27;家用电器&#x27;</pre></details></td></tr><tr class="pass"><td>15</td><td><span class="status-pass">PASS</span></td><td>nike_sales</td><td>4.4s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_amount) AS 销售额
-FROM dim_product t1
-JOIN fact_order t2 ON t1.product_id = t2.product_id
-WHERE t1.brand = &#x27;耐克&#x27;</pre></details></td></tr><tr class="pass"><td>16</td><td><span class="status-pass">PASS</span></td><td>zhejiang_snack_orders</td><td>5.9s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(*) AS 订单数量
+WHERE dr.province = &#x27;广东省&#x27;
+AND dp.category = &#x27;手机数码&#x27;;</pre></details></td></tr><tr class="pass"><td>12</td><td><span class="status-pass">PASS</span></td><td>gold_member_amount</td><td>6.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 订单总金额 FROM fact_order f JOIN dim_customer c ON f.customer_id = c.customer_id WHERE c.member_level = &#x27;黄金&#x27;</pre></details></td></tr><tr class="pass"><td>13</td><td><span class="status-pass">PASS</span></td><td>huawei_north_sales</td><td>7.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_region r ON f.region_id = r.region_id JOIN dim_product p ON f.product_id = p.product_id WHERE r.region_name = &#x27;华北&#x27; AND p.brand = &#x27;华为&#x27;</pre></details></td></tr><tr class="pass"><td>14</td><td><span class="status-pass">PASS</span></td><td>shanghai_appliance_sales</td><td>7.0s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_region r ON f.region_id = r.region_id JOIN dim_product p ON f.product_id = p.product_id WHERE r.province = &#x27;上海市&#x27; AND p.category = &#x27;家用电器&#x27;</pre></details></td></tr><tr class="pass"><td>15</td><td><span class="status-pass">PASS</span></td><td>nike_sales</td><td>6.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.brand = &#x27;耐克&#x27;</pre></details></td></tr><tr class="pass"><td>16</td><td><span class="status-pass">PASS</span></td><td>zhejiang_snack_orders</td><td>7.4s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(*) AS 订单数量
 FROM fact_order fo
 JOIN dim_region dr ON fo.region_id = dr.region_id
 JOIN dim_product dp ON fo.product_id = dp.product_id
-WHERE dr.province = &#x27;浙江省&#x27; AND dp.category = &#x27;休闲零食&#x27;;</pre></details></td></tr><tr class="pass"><td>17</td><td><span class="status-pass">PASS</span></td><td>sichuan_gold_amount</td><td>6.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_amount) AS 订单总金额
-FROM fact_order t1
-JOIN dim_region t2 ON t1.region_id = t2.region_id
-JOIN dim_customer t3 ON t1.customer_id = t3.customer_id
-WHERE t2.province = &#x27;四川省&#x27; AND t3.member_level = &#x27;黄金&#x27;</pre></details></td></tr><tr class="pass"><td>18</td><td><span class="status-pass">PASS</span></td><td>samsung_january_sales</td><td>6.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_amount) AS 销售额
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-JOIN dim_date t3 ON t1.date_id = t3.date_id
-WHERE t2.brand = &#x27;三星&#x27; AND t3.date_id BETWEEN 20250101 AND 20250131</pre></details></td></tr><tr class="pass"><td>19</td><td><span class="status-pass">PASS</span></td><td>dyson_january_sales</td><td>6.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_amount) AS 销售额
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-JOIN dim_date t3 ON t1.date_id = t3.date_id
-WHERE t2.product_name LIKE &#x27;%戴森%吸尘器%&#x27;
-  AND t3.date_id BETWEEN 20250101 AND 20250131</pre></details></td></tr><tr class="pass"><td>20</td><td><span class="status-pass">PASS</span></td><td>huazhong_male_amount</td><td>6.4s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t3.order_amount) AS 订单总金额
-FROM dim_customer t1
-JOIN fact_order t3 ON t1.customer_id = t3.customer_id
-JOIN dim_region t2 ON t3.region_id = t2.region_id
-WHERE t1.gender = &#x27;男&#x27; AND t2.region_name = &#x27;华中&#x27;</pre></details></td></tr><tr class="pass"><td>21</td><td><span class="status-pass">PASS</span></td><td>high_value_order_count</td><td>4.0s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(*) AS 订单笔数 FROM fact_order WHERE order_amount &gt; 5000.0</pre></details></td></tr><tr class="pass"><td>22</td><td><span class="status-pass">PASS</span></td><td>snack_quantity</td><td>5.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_quantity) AS 件数
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-WHERE t2.category = &#x27;休闲零食&#x27;</pre></details></td></tr><tr class="pass"><td>23</td><td><span class="status-pass">PASS</span></td><td>top_region_sales</td><td>4.4s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT region_name AS 大区
-FROM dim_region r
-JOIN fact_order f ON r.region_id = f.region_id
-GROUP BY region_name
-ORDER BY SUM(f.order_amount) DESC
-LIMIT 1</pre></details></td></tr><tr class="pass"><td>24</td><td><span class="status-pass">PASS</span></td><td>top_province_sales</td><td>4.9s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT d.province
-FROM fact_order f
-JOIN dim_region d ON f.region_id = d.region_id
-GROUP BY d.province
-ORDER BY SUM(f.order_amount) DESC
-LIMIT 1</pre></details></td></tr><tr class="pass"><td>25</td><td><span class="status-pass">PASS</span></td><td>top_member_level_orders</td><td>4.8s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dim_customer.member_level AS 会员等级
-FROM fact_order
-JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id
-GROUP BY dim_customer.member_level
-ORDER BY COUNT(*) DESC
-LIMIT 1</pre></details></td></tr><tr class="pass"><td>26</td><td><span class="status-pass">PASS</span></td><td>monthly_sales_trend</td><td>5.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT 
-  YEAR(d.date_id) AS 年份,
-  MONTH(d.date_id) AS 月份,
-  SUM(f.order_amount) AS 销售额
+WHERE dr.province = &#x27;浙江省&#x27;
+AND dp.category = &#x27;休闲零食&#x27;;</pre></details></td></tr><tr class="pass"><td>17</td><td><span class="status-pass">PASS</span></td><td>sichuan_gold_amount</td><td>8.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 订单总金额 FROM fact_order INNER JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id INNER JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.province = &#x27;四川省&#x27; AND dim_customer.member_level = &#x27;黄金&#x27;</pre></details></td></tr><tr class="fail"><td>18</td><td><span class="status-fail">FAIL</span></td><td>samsung_january_sales</td><td>7.0s</td><td>检索层：期望的表 [&#x27;dim_date&#x27;] 未进入最终上下文（实际命中 [&#x27;dim_product&#x27;, &#x27;fact_order&#x27;]）</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE f.date_id &gt;= 20250101 AND f.date_id &lt;= 20250131 AND p.brand = &#x27;三星&#x27;</pre></details></td></tr><tr class="fail"><td>19</td><td><span class="status-fail">FAIL</span></td><td>dyson_january_sales</td><td>7.9s</td><td>检索层：期望的表 [&#x27;dim_date&#x27;] 未进入最终上下文（实际命中 [&#x27;dim_product&#x27;, &#x27;fact_order&#x27;]）</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE f.date_id &gt;= 20250101 AND f.date_id &lt;= 20250131 AND p.brand = &#x27;戴森&#x27;</pre></details></td></tr><tr class="pass"><td>20</td><td><span class="status-pass">PASS</span></td><td>huazhong_male_amount</td><td>8.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 订单总金额 FROM fact_order JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.region_name = &#x27;华中&#x27; AND dim_customer.gender = &#x27;男&#x27;</pre></details></td></tr><tr class="pass"><td>21</td><td><span class="status-pass">PASS</span></td><td>high_value_order_count</td><td>5.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT COUNT(order_id) AS 订单数量 FROM fact_order WHERE order_amount &gt; 5000</pre></details></td></tr><tr class="pass"><td>22</td><td><span class="status-pass">PASS</span></td><td>snack_quantity</td><td>7.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product d ON f.product_id = d.product_id WHERE d.category = &#x27;休闲零食&#x27;</pre></details></td></tr><tr class="pass"><td>23</td><td><span class="status-pass">PASS</span></td><td>top_region_sales</td><td>6.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dr.region_name AS 大区, SUM(fo.order_amount) AS 销售额 FROM fact_order fo JOIN dim_region dr ON fo.region_id = dr.region_id GROUP BY dr.region_name ORDER BY 销售额 DESC LIMIT 1</pre></details></td></tr><tr class="pass"><td>24</td><td><span class="status-pass">PASS</span></td><td>top_province_sales</td><td>6.7s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT t1.province AS 省份, SUM(t2.order_amount) AS 销售额 FROM dim_region t1 JOIN fact_order t2 ON t1.region_id = t2.region_id GROUP BY t1.province ORDER BY 销售额 DESC LIMIT 1</pre></details></td></tr><tr class="pass"><td>25</td><td><span class="status-pass">PASS</span></td><td>top_member_level_orders</td><td>6.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dc.member_level AS 会员等级, COUNT(fo.order_id) AS 订单数量 FROM fact_order fo JOIN dim_customer dc ON fo.customer_id = dc.customer_id GROUP BY dc.member_level ORDER BY 订单数量 DESC LIMIT 1</pre></details></td></tr><tr class="pass"><td>26</td><td><span class="status-pass">PASS</span></td><td>monthly_sales_trend</td><td>7.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT
+    SUBSTRING(CAST(d.date_id AS CHAR), 1, 6) AS month,
+    SUM(f.order_amount) AS sales_amount
+FROM
+    fact_order f
+JOIN
+    dim_date d ON f.date_id = d.date_id
+WHERE
+    SUBSTRING(CAST(d.date_id AS CHAR), 1, 4) = &#x27;2025&#x27;
+GROUP BY
+    SUBSTRING(CAST(d.date_id AS CHAR), 1, 6)
+ORDER BY
+    month ASC;</pre></details></td></tr><tr class="pass"><td>27</td><td><span class="status-pass">PASS</span></td><td>category_sales_ranking</td><td>6.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dp.category AS 商品品类, SUM(fo.order_amount) AS 销售额 FROM fact_order fo JOIN dim_product dp ON fo.product_id = dp.product_id GROUP BY dp.category ORDER BY 销售额 DESC</pre></details></td></tr><tr class="pass"><td>28</td><td><span class="status-pass">PASS</span></td><td>top3_brands</td><td>6.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dp.brand, SUM(fo.order_amount) AS 销售额 FROM fact_order fo JOIN dim_product dp ON fo.product_id = dp.product_id GROUP BY dp.brand ORDER BY 销售额 DESC LIMIT 3</pre></details></td></tr><tr class="pass"><td>29</td><td><span class="status-pass">PASS</span></td><td>top_spending_customer</td><td>6.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dc.customer_name, SUM(fo.order_amount) AS total_order_amount FROM fact_order fo JOIN dim_customer dc ON fo.customer_id = dc.customer_id GROUP BY dc.customer_name ORDER BY total_order_amount DESC LIMIT 1</pre></details></td></tr><tr class="pass"><td>30</td><td><span class="status-pass">PASS</span></td><td>iphone_units_sold</td><td>6.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.product_name = &#x27;iPhone 15 Pro&#x27;</pre></details></td></tr><tr class="pass"><td>31</td><td><span class="status-pass">PASS</span></td><td>best_seller_product</td><td>6.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT t.product_name FROM dim_product t JOIN fact_order f ON t.product_id = f.product_id GROUP BY t.product_name ORDER BY SUM(f.order_quantity) DESC LIMIT 1</pre></details></td></tr><tr class="pass"><td>32</td><td><span class="status-pass">PASS</span></td><td>samsung_phone_sales</td><td>6.0s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product d ON f.product_id = d.product_id WHERE d.brand = &#x27;三星&#x27;</pre></details></td></tr><tr class="pass"><td>33</td><td><span class="status-pass">PASS</span></td><td>air_conditioner_sales</td><td>6.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 成交总额, SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.category = &#x27;家用电器&#x27; AND p.product_name LIKE &#x27;%空调%&#x27;</pre></details></td></tr><tr class="pass"><td>34</td><td><span class="status-pass">PASS</span></td><td>milk_sales</td><td>6.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.product_name = &#x27;蒙牛纯牛奶 250ml*12&#x27;</pre></details></td></tr><tr class="pass"><td>35</td><td><span class="status-pass">PASS</span></td><td>coffee_sales</td><td>5.7s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.brand = &#x27;雀巢&#x27;</pre></details></td></tr><tr class="pass"><td>36</td><td><span class="status-pass">PASS</span></td><td>worst_selling_product</td><td>5.7s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT t1.product_name FROM dim_product t1 JOIN fact_order t2 ON t1.product_id = t2.product_id GROUP BY t1.product_id, t1.product_name ORDER BY SUM(t2.order_quantity) ASC LIMIT 1</pre></details></td></tr><tr class="fail"><td>37</td><td><span class="status-fail">FAIL</span></td><td>march_daily_sales</td><td>5.4s</td><td>检索层：期望的表 [&#x27;dim_date&#x27;] 未进入最终上下文（实际命中 [&#x27;fact_order&#x27;]）</td><td>-</td><td><details><summary>查看</summary><pre>SELECT date_id, SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id &gt;= 20250301 AND date_id &lt;= 20250331 GROUP BY date_id ORDER BY date_id</pre></details></td></tr><tr class="pass"><td>38</td><td><span class="status-pass">PASS</span></td><td>january_daily_orders</td><td>6.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT d.date_id AS 日期, COUNT(f.order_id) AS 订单量 FROM fact_order f JOIN dim_date d ON f.date_id = d.date_id WHERE d.date_id &gt;= 20250101 AND d.date_id &lt;= 20250131 GROUP BY d.date_id ORDER BY d.date_id ASC</pre></details></td></tr><tr class="fail"><td>39</td><td><span class="status-fail">FAIL</span></td><td>valentine_day_sales</td><td>5.1s</td><td>检索层：期望的表 [&#x27;dim_date&#x27;] 未进入最终上下文（实际命中 [&#x27;fact_order&#x27;]）</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id = 20250214</pre></details></td></tr><tr class="pass"><td>40</td><td><span class="status-pass">PASS</span></td><td>february_gmv</td><td>5.9s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_date ON fact_order.date_id = dim_date.date_id WHERE dim_date.date_id &gt;= 20250201 AND dim_date.date_id &lt;= 20250228</pre></details></td></tr><tr class="fail"><td>41</td><td><span class="status-fail">FAIL</span></td><td>jan_first_week_sales</td><td>6.7s</td><td>检索层：期望的表 [&#x27;dim_date&#x27;] 未进入最终上下文（实际命中 [&#x27;fact_order&#x27;]）</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id BETWEEN 20250101 AND 20250107</pre></details></td></tr><tr class="pass"><td>42</td><td><span class="status-pass">PASS</span></td><td>total_revenue_q1</td><td>6.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 收入 FROM fact_order f JOIN dim_date d ON f.date_id = d.date_id WHERE d.month IN (1, 2, 3) AND f.date_id &gt;= 20250101 AND f.date_id &lt;= 20250331</pre></details></td></tr><tr class="pass"><td>43</td><td><span class="status-pass">PASS</span></td><td>feb_vs_march</td><td>18.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT
+    CASE
+        WHEN d.month = 2 THEN &#x27;2025年2月&#x27;
+        WHEN d.month = 3 THEN &#x27;2025年3月&#x27;
+    END AS month_label,
+    SUM(f.order_amount) AS total_sales
 FROM fact_order f
 JOIN dim_date d ON f.date_id = d.date_id
-WHERE d.date_id &gt;= 20250101 AND d.date_id &lt;= 20251231
-GROUP BY YEAR(d.date_id), MONTH(d.date_id)
-ORDER BY 年份, 月份;</pre></details></td></tr><tr class="pass"><td>27</td><td><span class="status-pass">PASS</span></td><td>category_sales_ranking</td><td>6.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT d.category AS 商品品类, SUM(f.order_amount) AS 销售额
-FROM dim_product d
-JOIN fact_order f ON d.product_id = f.product_id
-GROUP BY d.category
-ORDER BY 销售额 DESC</pre></details></td></tr><tr class="pass"><td>28</td><td><span class="status-pass">PASS</span></td><td>top3_brands</td><td>4.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT d.brand
-FROM dim_product d
-JOIN fact_order f ON d.product_id = f.product_id
-GROUP BY d.brand
-ORDER BY SUM(f.order_amount) DESC
-LIMIT 3</pre></details></td></tr><tr class="pass"><td>29</td><td><span class="status-pass">PASS</span></td><td>top_spending_customer</td><td>5.4s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dc.customer_name
-FROM fact_order fo
-JOIN dim_customer dc ON fo.customer_id = dc.customer_id
-GROUP BY dc.customer_name
-ORDER BY SUM(fo.order_amount) DESC
-LIMIT 1</pre></details></td></tr><tr class="pass"><td>30</td><td><span class="status-pass">PASS</span></td><td>iphone_units_sold</td><td>4.8s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_quantity) AS 销量
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-WHERE t2.product_name = &#x27;iPhone 15 Pro&#x27;;</pre></details></td></tr><tr class="pass"><td>31</td><td><span class="status-pass">PASS</span></td><td>best_seller_product</td><td>5.1s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dp.product_name
-FROM fact_order fo
-JOIN dim_product dp ON fo.product_id = dp.product_id
-GROUP BY dp.product_name
-ORDER BY SUM(fo.order_quantity) DESC
-LIMIT 1</pre></details></td></tr><tr class="pass"><td>32</td><td><span class="status-pass">PASS</span></td><td>samsung_phone_sales</td><td>5.0s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_quantity) AS 销量
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-WHERE t2.brand = &#x27;三星&#x27;</pre></details></td></tr><tr class="pass"><td>33</td><td><span class="status-pass">PASS</span></td><td>air_conditioner_sales</td><td>5.2s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_amount) AS 销售额, SUM(t1.order_quantity) AS 销量
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-WHERE t2.category = &#x27;家用电器&#x27; AND t2.product_name LIKE &#x27;%空调%&#x27;;</pre></details></td></tr><tr class="pass"><td>34</td><td><span class="status-pass">PASS</span></td><td>milk_sales</td><td>5.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_quantity) AS 销量
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-WHERE t2.product_name = &#x27;蒙牛纯牛奶 250ml*12&#x27;;</pre></details></td></tr><tr class="pass"><td>35</td><td><span class="status-pass">PASS</span></td><td>coffee_sales</td><td>4.9s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_quantity) AS 销量
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-WHERE t2.brand = &#x27;雀巢&#x27; AND t2.product_name = &#x27;雀巢金牌速溶咖啡&#x27;;</pre></details></td></tr><tr class="pass"><td>36</td><td><span class="status-pass">PASS</span></td><td>worst_selling_product</td><td>5.5s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT dp.product_name AS 商品名称
-FROM dim_product dp
-JOIN fact_order fo ON dp.product_id = fo.product_id
-GROUP BY dp.product_name
-ORDER BY SUM(fo.order_quantity) ASC
-LIMIT 1</pre></details></td></tr><tr class="pass"><td>37</td><td><span class="status-pass">PASS</span></td><td>march_daily_sales</td><td>5.3s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT d.date_id AS 日期, SUM(f.order_amount) AS 销售额
-FROM fact_order f
-JOIN dim_date d ON f.date_id = d.date_id
-WHERE d.date_id &gt;= 20250301 AND d.date_id &lt;= 20250331
-GROUP BY d.date_id
-ORDER BY d.date_id;</pre></details></td></tr><tr class="pass"><td>38</td><td><span class="status-pass">PASS</span></td><td>january_daily_orders</td><td>5.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT d.date_id AS 日期, COUNT(f.order_id) AS 订单量
-FROM fact_order f
-JOIN dim_date d ON f.date_id = d.date_id
-WHERE d.date_id BETWEEN 20250101 AND 20250131
-GROUP BY d.date_id
-ORDER BY d.date_id;</pre></details></td></tr><tr class="pass"><td>39</td><td><span class="status-pass">PASS</span></td><td>valentine_day_sales</td><td>5.4s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 销售额
-FROM fact_order
-JOIN dim_date ON fact_order.date_id = dim_date.date_id
-WHERE dim_date.date_id = 20250214</pre></details></td></tr><tr class="fail"><td>40</td><td><span class="status-fail">FAIL</span></td><td>february_gmv</td><td>3.6s</td><td>检索层：期望的表 [&#x27;dim_date&#x27;] 未进入最终上下文（实际命中 [&#x27;fact_order&#x27;]）</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(order_amount) AS GMV FROM fact_order WHERE date_id &gt;= 20250201 AND date_id &lt;= 20250229</pre></details></td></tr><tr class="pass"><td>41</td><td><span class="status-pass">PASS</span></td><td>jan_first_week_sales</td><td>4.7s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 销售额
-FROM fact_order
-JOIN dim_date ON fact_order.date_id = dim_date.date_id
-WHERE dim_date.date_id BETWEEN 20250101 AND 20250107</pre></details></td></tr><tr class="pass"><td>42</td><td><span class="status-pass">PASS</span></td><td>total_revenue_q1</td><td>4.6s</td><td>表召回与 SQL 片段全部命中</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 收入
-FROM fact_order
-JOIN dim_date ON fact_order.date_id = dim_date.date_id
-WHERE dim_date.date_id &gt;= 20250101 AND dim_date.date_id &lt;= 20250331</pre></details></td></tr><tr class="fail"><td>43</td><td><span class="status-fail">FAIL</span></td><td>feb_vs_march</td><td>7.3s</td><td>生成层：SQL 缺少片段 [&#x27;GROUP BY&#x27;]</td><td>-</td><td><details><summary>查看</summary><pre>SELECT 
-  CASE 
-    WHEN SUM(CASE WHEN d.date_id &gt;= 20250201 AND d.date_id &lt;= 20250228 THEN f.order_amount ELSE 0 END) &gt; 
-         SUM(CASE WHEN d.date_id &gt;= 20250301 AND d.date_id &lt;= 20250331 THEN f.order_amount ELSE 0 END) 
-    THEN &#x27;2025年2月&#x27; 
-    ELSE &#x27;2025年3月&#x27; 
-  END AS 月份
-FROM fact_order f
-JOIN dim_date d ON f.date_id = d.date_id
-WHERE d.date_id BETWEEN 20250201 AND 20250331;</pre></details></td></tr><tr class="pass"><td>44</td><td><span class="status-pass">PASS</span></td><td>no_answer_spaceship</td><td>6.2s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_quantity) AS 销量
-FROM dim_product t1
-JOIN fact_order t2 ON t1.product_id = t2.product_id
-JOIN dim_date t3 ON t2.date_id = t3.date_id
-WHERE t1.category = &#x27;全球宇宙飞船&#x27; AND t3.date_id &gt;= 20260101 AND t3.date_id &lt;= 20261231</pre></details></td></tr><tr class="fail"><td>45</td><td><span class="status-fail">FAIL</span></td><td>no_answer_antarctica</td><td>3.7s</td><td>编造：数仓中并不存在该数据，但查询返回了真实值 {&#x27;销售额&#x27;: 0}（常见于 COALESCE 等把 NULL 兜底成 0 的写法）</td><td>-</td><td><details><summary>查看</summary><pre>SELECT 0 AS `销售额`</pre></details></td></tr><tr class="pass"><td>46</td><td><span class="status-pass">PASS</span></td><td>no_answer_feb29</td><td>4.9s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 销售额
-FROM fact_order
-JOIN dim_date ON fact_order.date_id = dim_date.date_id
-WHERE dim_date.date_id = 20250229</pre></details></td></tr><tr class="pass"><td>47</td><td><span class="status-pass">PASS</span></td><td>no_answer_2026_double11</td><td>4.6s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_amount) AS 销售额
-FROM fact_order t1
-JOIN dim_date t2 ON t1.date_id = t2.date_id
-WHERE t2.date_id BETWEEN 20261101 AND 20261111;</pre></details></td></tr><tr class="pass"><td>48</td><td><span class="status-pass">PASS</span></td><td>no_answer_yacht</td><td>5.9s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_quantity) AS 销量
-FROM dim_product t1
-JOIN fact_order t2 ON t1.product_id = t2.product_id
-WHERE t1.product_name LIKE &#x27;%游艇%&#x27;;</pre></details></td></tr><tr class="pass"><td>49</td><td><span class="status-pass">PASS</span></td><td>no_answer_diamond</td><td>5.0s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t1.order_amount) AS 销售额
-FROM fact_order t1
-JOIN dim_product t2 ON t1.product_id = t2.product_id
-WHERE t2.category = &#x27;钻石&#x27;</pre></details></td></tr><tr class="pass"><td>50</td><td><span class="status-pass">PASS</span></td><td>no_answer_customer_zhaozilong</td><td>5.2s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(t2.order_amount) AS 总消费金额
-FROM dim_customer t1
-JOIN fact_order t2 ON t1.customer_id = t2.customer_id
-WHERE t1.customer_name = &#x27;赵子龙&#x27;;</pre></details></td></tr>
+WHERE d.year = 2025 AND d.month IN (2, 3)
+GROUP BY d.month
+ORDER BY total_sales DESC
+LIMIT 1</pre></details></td></tr><tr class="pass"><td>44</td><td><span class="status-pass">PASS</span></td><td>no_answer_spaceship</td><td>7.5s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id JOIN dim_date d ON f.date_id = d.date_id WHERE d.date_id &gt;= 20260101 AND d.date_id &lt;= 20261231 AND p.category = &#x27;全球宇宙飞船&#x27;</pre></details></td></tr><tr class="pass"><td>45</td><td><span class="status-pass">PASS</span></td><td>no_answer_antarctica</td><td>6.4s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 销售额 FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.region_name = &#x27;南极&#x27;</pre></details></td></tr><tr class="pass"><td>46</td><td><span class="status-pass">PASS</span></td><td>no_answer_feb29</td><td>5.4s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(order_amount) AS 销售额 FROM fact_order WHERE date_id = 20250229</pre></details></td></tr><tr class="pass"><td>47</td><td><span class="status-pass">PASS</span></td><td>no_answer_2026_double11</td><td>11.6s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_date d ON f.date_id = d.date_id WHERE d.date_id = 20261111</pre></details></td></tr><tr class="pass"><td>48</td><td><span class="status-pass">PASS</span></td><td>no_answer_yacht</td><td>5.4s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_quantity) AS 销量 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.product_name LIKE &#x27;%游艇%&#x27;</pre></details></td></tr><tr class="pass"><td>49</td><td><span class="status-pass">PASS</span></td><td>no_answer_diamond</td><td>6.1s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(f.order_amount) AS 销售额 FROM fact_order f JOIN dim_product p ON f.product_id = p.product_id WHERE p.category = &#x27;钻石类商品&#x27;</pre></details></td></tr><tr class="pass"><td>50</td><td><span class="status-pass">PASS</span></td><td>no_answer_customer_zhaozilong</td><td>6.3s</td><td>查询结果全为 NULL（聚合空集），系统没有编造数据</td><td>-</td><td><details><summary>查看</summary><pre>SELECT SUM(fact_order.order_amount) AS 总消费金额 FROM fact_order JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id WHERE dim_customer.customer_name = &#x27;赵子龙&#x27;</pre></details></td></tr>
 </table>
 </body>
 </html>
