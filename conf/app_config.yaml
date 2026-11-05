@@ -18,11 +18,14 @@ db_meta:
   password: dili123
   database: meta
 
+# 2026-11-05 修改：数仓账号切换为只读账号 dw_ro（SQL 安全四道防线的最后一道），
+# 即使上层防护被击穿，数据库层面也无法写入。账号由 docker/mysql/02-init-readonly-user.sql 创建；
+# 已有 mysql_data 卷的环境 initdb.d 不会自动执行新脚本，需手动补执行一次
 db_dw:
   host: localhost
   port: 3307
-  user: didilili
-  password: dili123
+  user: dw_ro
+  password: dw_ro_pass
   database: dw
 
 qdrant:

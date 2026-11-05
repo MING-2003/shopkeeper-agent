@@ -7,8 +7,26 @@
 SQL 生成闭环中的数据库环境读取 SQL 校验和最终查询执行也集中放在这里
 """
 
+import asyncio
+import re
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.sql_guard import guard_sql
+
+# 数仓查询兜底超时（秒）：客户端侧防止请求悬挂
+DW_QUERY_TIMEOUT_SECONDS = 30
+
+# 标识符白名单：防注入的第一道闸
+_IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _check_identifier(name: str) -> str:
+    """校验表名/字段名，杜绝标识符注入"""
+    if not _IDENTIFIER_PATTERN.fullmatch(name):
+        raise ValueError(f"非法 SQL 标识符：{name!r}")
+    return name
 
 
 class DWMySQLRepository:
@@ -19,6 +37,7 @@ class DWMySQLRepository:
 
     async def get_column_types(self, table_name: str) -> dict[str, str]:
         """查询整张表的字段类型，作为 ColumnInfo.type 的真实来源"""
+        table_name = _check_identifier(table_name)
         sql = f"show columns from {table_name}"
         result = await self.session.execute(text(sql))
         result_dict = result.mappings().fetchall()
@@ -28,6 +47,8 @@ class DWMySQLRepository:
         self, table_name: str, column_name: str, limit: int = 10
     ) -> list:
         """抽样查询字段示例值，供元数据入库和后续检索链路复用"""
+        table_name = _check_identifier(table_name)
+        column_name = _check_identifier(column_name)
         sql = f"select distinct {column_name} from {table_name} limit {limit}"
         result = await self.session.execute(text(sql))
         return [row[0] for row in result.fetchall()]
@@ -44,11 +65,14 @@ class DWMySQLRepository:
         return {"dialect": dialect, "version": version}
 
     async def validate(self, sql: str):
-        """用 EXPLAIN 让数据库提前解析 SQL，发现语法 表名 字段名等错误"""
-        sql = f"explain {sql}"
-        await self.session.execute(text(sql))
+        """先过安全防护，再用 EXPLAIN 让数据库提前解析 SQL，发现语法 表名 字段名等错误"""
+        guarded_sql = guard_sql(sql)
+        await self.session.execute(text(f"explain {guarded_sql}"))
 
     async def run(self, sql: str) -> list[dict]:
         """执行最终 SQL，并把 SQLAlchemy 行对象转换成前端更易消费的字典列表"""
-        result = await self.session.execute(text(sql))
+        guarded_sql = guard_sql(sql)
+        # 客户端兜底超时，防止请求悬挂；服务端限制由 dependencies.py 的 MAX_EXECUTION_TIME 保证
+        async with asyncio.timeout(DW_QUERY_TIMEOUT_SECONDS):
+            result = await self.session.execute(text(guarded_sql))
         return [dict(row) for row in result.mappings().fetchall()]

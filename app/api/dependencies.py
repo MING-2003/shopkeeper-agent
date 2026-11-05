@@ -10,6 +10,7 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.clients.embedding_client_manager import embedding_client_manager
@@ -55,6 +56,10 @@ async def get_dw_session():
     """创建一次请求内使用的数仓 Session"""
 
     async with dw_mysql_client_manager.session_factory() as dw_session:
+        # 服务端查询超时（毫秒，MySQL 8.0）：超时的 SELECT 由数据库主动终止，
+        # 与仓储层 asyncio.timeout 的客户端兜底配合——客户端保证接口不悬挂，
+        # 服务端保证数据库不被慢查询拖垮
+        await dw_session.execute(text("SET SESSION MAX_EXECUTION_TIME = 30000"))
         yield dw_session
 
 
