@@ -20,6 +20,7 @@ from app.clients.mysql_client_manager import (
     meta_mysql_client_manager,
 )
 from app.clients.qdrant_client_manager import qdrant_client_manager
+from app.clients.redis_client_manager import redis_client_manager
 
 
 @asynccontextmanager
@@ -32,6 +33,7 @@ async def lifespan(app: FastAPI):
     es_client_manager.init()
     meta_mysql_client_manager.init()
     dw_mysql_client_manager.init()
+    redis_client_manager.init()
 
     # 多轮对话记忆：SQLite checkpointer 按 thread_id 持久化每个会话的 state。
     # 存放目录不存在时先创建（sqlite 只建文件不建目录）
@@ -50,3 +52,4 @@ async def lifespan(app: FastAPI):
     await es_client_manager.close()
     await meta_mysql_client_manager.close()
     await dw_mysql_client_manager.close()
+    await redis_client_manager.close()

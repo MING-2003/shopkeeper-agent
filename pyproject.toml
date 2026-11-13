@@ -30,6 +30,7 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "pyyaml>=6.0.3",
     "qdrant-client>=1.17.1",
+    "redis>=8.1.0",
     "sqlalchemy>=2.0.49",
     "sqlglot>=30.29.0",
 ]

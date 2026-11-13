@@ -4255,3 +4255,6 @@ LIMIT 1
 2026-11-04 22:46:14.721 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:34 - SQL语法正确
 2026-11-04 22:46:14.723 | INFO     | request_id - 1 | app.agent.nodes.run_sql:run_sql:29 - SQL执行结果：[{'总消费金额': None}]
 2026-11-04 22:46:14.724 | INFO     | request_id - 1 | app.agent.nodes.run_sql:run_sql:39 - 本次查询未匹配到任何数据
+2026-11-12 17:25:46.535 | WARNING  | request_id - 1 | app.services.query_service:_set_cache:86 - Redis 缓存写入失败：Error 22 connecting to localhost:6380. 远程计算机拒绝网络连接。.
+2026-11-12 17:26:36.283 | WARNING  | request_id - 1 | app.services.query_service:_get_cache:78 - Redis 缓存读取失败，降级为全链路执行：Error 22 connecting to localhost:6380. 远程计算机拒绝网络连接。.
+2026-11-12 17:27:25.841 | WARNING  | request_id - 1 | app.services.query_service:_get_cache:78 - Redis 缓存读取失败，降级为全链路执行：Error 22 connecting to localhost:6380. 远程计算机拒绝网络连接。.

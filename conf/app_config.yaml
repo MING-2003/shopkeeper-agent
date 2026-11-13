@@ -43,6 +43,12 @@ es:
   port: 9201
   index_name: data_agent
 
+# Redis 配置（分层缓存）
+# 宿主机 6379 被 dovideo-ai 项目的 Redis 容器占用，Docker 映射到 6380（见 docker/docker-compose.yaml）
+redis:
+  host: localhost
+  port: 6380
+
 # LLM 配置
 # 2026-10-01 修改：原配置指向硅基流动(api.siliconflow.cn)，但本项目实际使用的是
 # 阿里云百炼的 API Key，导致调用时返回 401 "Token is invalid"。

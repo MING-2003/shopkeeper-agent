@@ -63,7 +63,18 @@ services:
     volumes:
       - ./embedding/bge-large-zh-v1.5:/models/bge-large-zh-v1.5
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      # 宿主机 6379 被 dovideo-ai 项目的 Redis 容器占用，映射到 6380；容器内仍是 6379
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   mysql_data:
   es_data:
   qdrant_data:
+  redis_data:

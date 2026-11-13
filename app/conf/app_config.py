@@ -79,6 +79,14 @@ class ESConfig:
 
 
 @dataclass
+class RedisConfig:
+    """Redis 连接配置"""
+
+    host: str
+    port: int
+
+
+@dataclass
 class LLMConfig:
     """大模型调用配置"""
 
@@ -97,6 +105,7 @@ class AppConfig:
     qdrant: QdrantConfig
     embedding: EmbeddingConfig
     es: ESConfig
+    redis: RedisConfig
     llm: LLMConfig
 
 

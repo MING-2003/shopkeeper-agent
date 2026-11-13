@@ -10,6 +10,7 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
+from redis.asyncio import Redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,6 +21,7 @@ from app.clients.mysql_client_manager import (
     meta_mysql_client_manager,
 )
 from app.clients.qdrant_client_manager import qdrant_client_manager
+from app.clients.redis_client_manager import redis_client_manager
 from app.repositories.es.value_es_repository import ValueESRepository
 from app.repositories.mysql.dw.dw_mysql_repository import DWMySQLRepository
 from app.repositories.mysql.meta.meta_mysql_repository import MetaMySQLRepository
@@ -50,6 +52,12 @@ async def get_embedding_client() -> HuggingFaceEndpointEmbeddings:
     """获取应用启动阶段初始化好的 Embedding 客户端"""
 
     return embedding_client_manager.client
+
+
+async def get_redis_client() -> Redis:
+    """获取应用启动阶段初始化好的 Redis 客户端（分层缓存用）"""
+
+    return redis_client_manager.client
 
 
 async def get_dw_session():
@@ -138,4 +146,5 @@ async def get_query_service(
         metric_qdrant_repository=metric_qdrant_repository,
         value_es_repository=value_es_repository,
         conversation_service=conversation_service,
+        redis_client=redis_client_manager.client,
     )
